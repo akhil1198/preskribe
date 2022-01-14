@@ -12,6 +12,13 @@
   "author": "Akhil S",
   "license": "ISC",
   "dependencies": {
-    "concurrently": "^7.0.0"
+    "@mui/material": "^5.2.8",
+    "axios": "^0.24.0",
+    "concurrently": "^7.0.0",
+    "history": "^5.2.0",
+    "moment": "^2.29.1",
+    "react-redux": "^7.2.6",
+    "react-router-dom": "^6.2.1",
+    "redux-thunk": "^2.4.1"
   }
 }
