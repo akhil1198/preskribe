@@ -4,6 +4,10 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 
 const theme = createTheme({
 	palette: {
@@ -14,13 +18,13 @@ const theme = createTheme({
 			main: "#D69C60",
 		},
 	},
-	typography: {
-		// fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
-		heading: {
-			fontSize: ["5rem"],
-		},
-		color: "red",
-	},
+	// typography: {
+	// 	// fontFamily: `"Roboto", "Helvetica", "Arial", sans-serif`,
+	// 	heading: {
+	// 		fontSize: ["5rem"],
+	// 	},
+	// 	color: "red",
+	// },
 });
 
 ReactDOM.render(
