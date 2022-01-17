@@ -5,7 +5,7 @@ import Wave from "../../assets/Wave.png";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import { Stack, Button, Divider } from "@mui/material";
+import { Stack, Button } from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 
@@ -53,19 +53,6 @@ const useStyles = makeStyles((theme) => ({
 		padding: "5% 0 0 0",
 	},
 }));
-
-// function LinkTab(props) {
-// 	return (
-// 		<Tab
-// 		component={}
-// 	)
-// }
-
-function scrollView(id) {
-	var divId = document.getElementById(id);
-	console.log(id);
-	divId.scrollIntoView();
-}
 
 export default function Petparent(props) {
 	const classes = useStyles();

@@ -33,9 +33,9 @@ const useStyles = makeStyles((theme) => ({
 		// fontFamily: "Roboto",
 		padding: "0 0 0 0",
 		fontSize: ["3.3rem", "!important"],
-		["@media (max-width:560px)"]: {
-			fontSize: ["3.3rem", "!important"],
-		},
+		// ["@media (max-width:560px)"]: {
+		// 	fontSize: ["3.3rem", "!important"],
+		// },
 	},
 	body: {
 		padding: "3% 10% 5% 10% ",
