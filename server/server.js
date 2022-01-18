@@ -16,9 +16,9 @@ app.use(
 	})
 );
 
-app.use("/pets", require("./app/routes/PetRoutes"));
-app.use("/vets", require("./app/routes/VetRoutes"));
-app.use("/", (req, res) => {
+app.use("/api/pets", require("./app/routes/PetRoutes"));
+app.use("/api/vets", require("./app/routes/VetRoutes"));
+app.use("/api", (req, res) => {
 	res.send("NodeJS server up and running.");
 });
 

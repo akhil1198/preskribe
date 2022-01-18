@@ -8,6 +8,8 @@ import Paper from "@mui/material/Paper";
 import { Stack, Button } from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import { connect } from "react-redux";
+import { createPet } from "../redux/petSlice";
 
 const useStyles = makeStyles((theme) => ({
 	back: {
@@ -54,9 +56,14 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-export default function Petparent(props) {
+function Petparent(props) {
 	const classes = useStyles();
 	const [value, setValue] = useState(0);
+	const [name, setName] = useState();
+	const [email, setEmail] = useState();
+	const [phone, setPhone] = useState();
+	const [age, setAge] = useState();
+	const [password, setPassword] = useState();
 
 	const handleSwitch = (event, newvalue) => {
 		// newvalue === 0 ? scrollView("signupform") : null;
@@ -69,7 +76,17 @@ export default function Petparent(props) {
 
 	const formSubmit = (event, values) => {
 		event.preventDefault();
-		console.log(values);
+		console.log({ name, phone, email, age, password });
+
+		props
+			.createPet({ name, phone, email, age, password })
+			.unwrap()
+			.then((data) => {
+				console.log(data);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
 
 	return (
@@ -101,27 +118,36 @@ export default function Petparent(props) {
 											label="Name"
 											variant="standard"
 											style={{ width: "80%" }}
+											value={name}
+											onChange={(e) => setName(e.target.value)}
 										/>
 										<TextField
 											id="standard-basic"
 											label="Email"
 											variant="standard"
 											style={{ marginTop: "5%", width: "80%" }}
+											value={email}
+											onChange={(e) => setEmail(e.target.value)}
 										/>
 										<TextField
 											id="standard-basic"
 											label="Phone"
 											variant="standard"
 											style={{ marginTop: "5%", width: "80%" }}
+											value={phone}
+											onChange={(e) => setPhone(e.target.value)}
 										/>
 										<TextField
 											id="standard-basic"
 											label="Age"
+											type="number"
 											variant="standard"
 											style={{
 												marginTop: "5%",
 												width: "80%",
 											}}
+											value={age}
+											onChange={(e) => setAge(e.target.value)}
 										/>
 										<TextField
 											id="standard-basic"
@@ -130,17 +156,10 @@ export default function Petparent(props) {
 											style={{
 												marginTop: "5%",
 												width: "80%",
-											}}
-										/>
-										<TextField
-											id="standard-basic"
-											label="Confirm Password"
-											variant="standard"
-											style={{
-												marginTop: "5%",
-												width: "80%",
 												marginBottom: "10%",
 											}}
+											value={password}
+											onChange={(e) => setPassword(e.target.value)}
 										/>
 										<Stack
 											direction="row"
@@ -220,3 +239,5 @@ export default function Petparent(props) {
 		</div>
 	);
 }
+
+export default connect(null, { createPet })(Petparent);

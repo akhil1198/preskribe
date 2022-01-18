@@ -5,6 +5,7 @@ const petControllers = {};
 
 petControllers.register = async (req, res, next) => {
 	const { name, email, phone, age, password } = req.body;
+	console.log(req.body);
 	console.log("req: ", req.body);
 	try {
 		const { email } = req.body;
