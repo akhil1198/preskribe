@@ -10,6 +10,7 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import { connect } from "react-redux";
 import { createPet } from "../redux/petSlice";
+import { useForm } from "react-hook-form";
 
 const useStyles = makeStyles((theme) => ({
 	back: {
@@ -54,6 +55,10 @@ const useStyles = makeStyles((theme) => ({
 	signup: {
 		padding: "5% 0 0 0",
 	},
+	errorMessage: {
+		fontSize: "10px",
+		color: "red",
+	},
 }));
 
 function Petparent(props) {
@@ -65,6 +70,24 @@ function Petparent(props) {
 	const [age, setAge] = useState();
 	const [password, setPassword] = useState();
 
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
+		// mode: onchange(),
+		defaultValues: {
+			name: "",
+			phone: null,
+			email: "",
+			age: null,
+			password: "",
+		},
+	});
+	//you can set default values to the form by sending a defaultValues object with the details to be prefilled
+	//use watch() api in useForm to get values for each field for example const name = watch('name') and youll get the values in name field
+
+	console.log(errors);
 	const handleSwitch = (event, newvalue) => {
 		// newvalue === 0 ? scrollView("signupform") : null;
 		// if (newvalue === 0) {
@@ -112,31 +135,64 @@ function Petparent(props) {
 							</Tabs>
 							{value === 1 ? (
 								<div className={classes.signup} id="name">
-									<form onSubmit={formSubmit}>
+									<form
+										onSubmit={handleSubmit((data) => {
+											console.log(data);
+										})}
+									>
 										<TextField
 											id="name"
 											label="Name"
 											variant="standard"
 											style={{ width: "80%" }}
-											value={name}
-											onChange={(e) => setName(e.target.value)}
+											{...register("name", {
+												required: "This is a mandatory field.",
+											})}
+											// value={name}
+											// onChange={(e) => setName(e.target.value)}
 										/>
+										<p className={classes.errorMessage}>
+											{errors && errors.name?.message}
+										</p>
 										<TextField
 											id="standard-basic"
 											label="Email"
 											variant="standard"
 											style={{ marginTop: "5%", width: "80%" }}
-											value={email}
-											onChange={(e) => setEmail(e.target.value)}
+											{...register("email", {
+												required: "This is a mandatory field.",
+												pattern: {
+													value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+													message: "Please enter a valid email.",
+												},
+											})}
+											// helperText={errors & errors.email?.message}
 										/>
+										<p className={classes.errorMessage}>
+											{errors && errors.email?.message}
+										</p>
 										<TextField
 											id="standard-basic"
 											label="Phone"
 											variant="standard"
+											type="number"
+											inputProps={{ maxLength: 10 }}
 											style={{ marginTop: "5%", width: "80%" }}
-											value={phone}
-											onChange={(e) => setPhone(e.target.value)}
+											{...register("phone", {
+												required: "This is a mandatory field.",
+												minLength: {
+													value: 10,
+													message: "Phone number should be 10 digits.",
+												},
+												maxLength: {
+													value: 10,
+													message: "Phone number should be 10 digits.",
+												},
+											})}
 										/>
+										<p className={classes.errorMessage}>
+											{errors && errors.phone?.message}
+										</p>
 										<TextField
 											id="standard-basic"
 											label="Age"
@@ -146,9 +202,11 @@ function Petparent(props) {
 												marginTop: "5%",
 												width: "80%",
 											}}
-											value={age}
-											onChange={(e) => setAge(e.target.value)}
+											{...register("age")}
 										/>
+										<p className={classes.errorMessage}>
+											{errors && errors.age?.message}
+										</p>
 										<TextField
 											id="standard-basic"
 											label="Password"
@@ -156,11 +214,21 @@ function Petparent(props) {
 											style={{
 												marginTop: "5%",
 												width: "80%",
-												marginBottom: "10%",
 											}}
-											value={password}
-											onChange={(e) => setPassword(e.target.value)}
+											{...register("password", {
+												required: "This is a mandatory field.",
+												minLength: {
+													value: 8,
+													message: "Password should be minimum 8 characters.",
+												},
+											})}
 										/>
+										<p
+											className={classes.errorMessage}
+											style={{ marginBottom: "10%" }}
+										>
+											{errors && errors.password?.message}
+										</p>
 										<Stack
 											direction="row"
 											spacing={2}
