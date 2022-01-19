@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const http = require("http").createServer(app);
+const dotenv = require("dotenv");
+dotenv.config();
 
 const connection = require("./app/config/connection");
 
@@ -22,6 +24,7 @@ app.use("/api", (req, res) => {
 	res.send("NodeJS server up and running.");
 });
 
-const port = process.env.PORT || 8000;
+const port = process.env.PORT;
+console.log(process.env.PORT);
 
 http.listen(port, () => console.log(`NodeJS server up and running at ${port}`));
