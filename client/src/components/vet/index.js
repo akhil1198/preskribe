@@ -1,13 +1,14 @@
-import { TextField, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 import Wave from "../../assets/Wave.png";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import { Stack, Button } from "@mui/material";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
+import VetSignup from "./auth/VetSignup";
+import VetLogin from "./auth/VetLogin";
 
 const useStyles = makeStyles((theme) => ({
 	back: {
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
 		color: theme.palette.primary.main,
 		maxHeight: "100vh",
 		width: "100%",
-		marginTop: "5vh",
+		// marginTop: "5vh",
 		padding: "5%",
 		// overflow: "scroll",
 		// ["@media (max-width:560px)"]: {
@@ -52,171 +53,63 @@ const useStyles = makeStyles((theme) => ({
 	signup: {
 		padding: "5% 0 0 0",
 	},
+
+	errorMessage: {
+		fontSize: "10px",
+		color: "red",
+	},
 }));
 
-export default function Petparent(props) {
+function Vet(props) {
 	const classes = useStyles();
 	const [value, setValue] = useState(0);
 
 	const handleSwitch = (event, newvalue) => {
-		// newvalue === 0 ? scrollView("signupform") : null;
-		// if (newvalue === 0) {
-		// 	scrollView("signupform");
-		// }
-		// scrollView("name");
 		setValue(newvalue);
 	};
 
-	const formSubmit = (event, values) => {
-		event.preventDefault();
-		console.log(values);
-	};
-
 	return (
-		<div className={classes.back}>
-			<Grid container>
-				<Grid item xs={1} sm={2}></Grid>
-				<Grid item xs={10} sm={8}>
-					<Box className="w3-animate-bottom">
-						<Paper elevation={12} className={classes.paper}>
-							<Typography variant="h2" className={classes.text}>
-								Sign up as a Vet and manage prescriptions, records without a
-								hassle!
-							</Typography>
-							<Tabs
-								value={value}
-								onChange={handleSwitch}
-								centered
-								textColor="secondary"
-								indicatorColor="secondary"
-							>
-								<Tab label="Log In" />
-								<Tab label="Sign Up" />
-							</Tabs>
-							{value === 1 ? (
-								<div className={classes.signup} id="name">
-									<form onSubmit={formSubmit}>
-										<TextField
-											id="name"
-											label="Name"
-											variant="standard"
-											style={{ width: "80%" }}
-										/>
-										<TextField
-											id="standard-basic"
-											label="Email"
-											variant="standard"
-											style={{ marginTop: "5%", width: "80%" }}
-										/>
-										<TextField
-											id="standard-basic"
-											label="Phone"
-											variant="standard"
-											style={{ marginTop: "5%", width: "80%" }}
-										/>
-										<TextField
-											id="standard-basic"
-											label="Age"
-											variant="standard"
-											style={{
-												marginTop: "5%",
-												width: "80%",
-											}}
-										/>
-										<TextField
-											id="standard-basic"
-											label="Password"
-											variant="standard"
-											style={{
-												marginTop: "5%",
-												width: "80%",
-											}}
-										/>
-										<TextField
-											id="standard-basic"
-											label="Confirm Password"
-											variant="standard"
-											style={{
-												marginTop: "5%",
-												width: "80%",
-												marginBottom: "10%",
-											}}
-										/>
-										<Stack
-											direction="row"
-											spacing={2}
-											justifyContent="center"
-											mb={2}
-										>
-											<Button
-												variant="contained"
-												color="secondary"
-												size="small"
-												type="submit"
-											>
-												Submit
-											</Button>
-											<Button
-												variant="contained"
-												color="secondary"
-												size="small"
-												onClick={() => (window.location.href = "/")}
-											>
-												Cancel
-											</Button>
-										</Stack>
-									</form>
-								</div>
-							) : (
-								<div>
-									<form>
-										<TextField
-											id="email"
-											label="Email"
-											variant="standard"
-											style={{ marginTop: "5%", width: "80%" }}
-										/>
-										<TextField
-											id="password"
-											label="Password"
-											variant="standard"
-											style={{
-												marginTop: "5%",
-												width: "80%",
-												marginBottom: "10%",
-											}}
-										/>
-										<Stack
-											direction="row"
-											spacing={2}
-											justifyContent="center"
-											mb={2}
-										>
-											<Button
-												variant="contained"
-												color="secondary"
-												size="small"
-												type="submit"
-											>
-												Submit
-											</Button>
-											<Button
-												variant="contained"
-												color="secondary"
-												size="small"
-												onClick={() => (window.location.href = "/")}
-											>
-												Cancel
-											</Button>
-										</Stack>
-									</form>
-								</div>
-							)}
-						</Paper>
-					</Box>
-				</Grid>
-				<Grid item xs={1} sm={2}></Grid>
+		<Grid
+			container
+			justify="center"
+			alignItems="center"
+			className={classes.back}
+			direction="row"
+			style={{ minHeight: "100vh" }}
+		>
+			<Grid item xs={1}></Grid>
+			<Grid item xs={10}>
+				<Box className="w3-animate-bottom">
+					<Paper elevation={12} className={classes.paper}>
+						<Typography variant="h2" className={classes.text}>
+							Sign up as a Vet and manage prescriptions, records without a
+							hassle!
+						</Typography>
+						<Tabs
+							value={value}
+							onChange={handleSwitch}
+							centered
+							textColor="secondary"
+							indicatorColor="secondary"
+						>
+							<Tab label="Log In" />
+							<Tab label="Sign Up" />
+						</Tabs>
+						{value === 1 ? (
+							<div className={classes.signup} id="name">
+								<VetSignup />
+							</div>
+						) : (
+							<div className={classes.signup}>
+								<VetLogin />
+							</div>
+						)}
+					</Paper>
+				</Box>
 			</Grid>
-		</div>
+			<Grid item xs={1}></Grid>
+		</Grid>
 	);
 }
+
+export default Vet;

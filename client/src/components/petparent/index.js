@@ -99,7 +99,7 @@ function Petparent(props) {
 								<PetSignup />
 							</div>
 						) : (
-							<div>
+							<div className={classes.signup}>
 								<PetLogin />
 							</div>
 						)}

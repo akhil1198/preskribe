@@ -2,7 +2,7 @@ const Pet = require("../models/PetModel");
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const petControllers = {};
-const config = require("config");
+
 petControllers.register = async (req, res, next) => {
 	var { name, email, phone, age, password } = req.body;
 	console.log(req.body);
@@ -14,7 +14,8 @@ petControllers.register = async (req, res, next) => {
 			email,
 		});
 		if (pet) {
-			return res.status(401).json({
+			return res.send({
+				status: 409,
 				msg: "Email already registered!",
 			});
 		} else {
@@ -43,6 +44,7 @@ petControllers.register = async (req, res, next) => {
 					jwt.sign(payload, process.env.jwtSecret, (err, token) => {
 						res.json({
 							success: true,
+							status: 200,
 							message: "Registered Successfully.",
 							token: token,
 						});
@@ -60,7 +62,7 @@ petControllers.register = async (req, res, next) => {
 		// }
 	} catch (error) {
 		console.log(error);
-		return res.status(500).json({ msg: "Server error!" });
+		return res.send({ status: 500, message: "Server error!" });
 	}
 };
 
@@ -89,6 +91,7 @@ petControllers.loginPet = async (req, res, next) => {
 				jwt.sign(payload, process.env.jwtSecret, (err, token) => {
 					res.send({
 						success: true,
+						status: 200,
 						message: "Successfully logged in.",
 						token: token,
 					});
@@ -96,13 +99,20 @@ petControllers.loginPet = async (req, res, next) => {
 			} else {
 				res.send({
 					success: false,
+					status: 409,
 					message: "Please check the password.",
 				});
 			}
+		} else {
+			res.send({
+				status: 409,
+				success: false,
+				message: "Email not registered.",
+			});
 		}
 	} catch (error) {
 		console.log(error);
-		res.json({ success: false, message: error });
+		res.json({ status: 500, success: false, message: error });
 	}
 };
 module.exports = petControllers;

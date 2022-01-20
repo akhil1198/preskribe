@@ -1,13 +1,9 @@
-import { TextField, Typography } from "@mui/material";
+import { TextField, Alert, Collapse, IconButton } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 import Wave from "../../../assets/Wave.png";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
 import { Stack, Button } from "@mui/material";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import CloseIcon from "@mui/icons-material/Close";
 import { connect } from "react-redux";
 import { loginPet } from "../../redux/petSlice";
 import { useForm } from "react-hook-form";
@@ -63,12 +59,8 @@ const useStyles = makeStyles((theme) => ({
 
 function PetLogin(props) {
 	const classes = useStyles();
-	const [value, setValue] = useState(0);
-	const [name, setName] = useState();
-	const [email, setEmail] = useState();
-	const [phone, setPhone] = useState();
-	const [age, setAge] = useState();
-	const [password, setPassword] = useState();
+	const [alertContent, setAlertContent] = useState();
+	const [open, setOpen] = useState(false);
 
 	const {
 		register,
@@ -84,31 +76,6 @@ function PetLogin(props) {
 	//you can set default values to the form by sending a defaultValues object with the details to be prefilled
 	//use watch() api in useForm to get values for each field for example const name = watch('name') and youll get the values in name field
 
-	console.log(errors);
-	const handleSwitch = (event, newvalue) => {
-		// newvalue === 0 ? scrollView("signupform") : null;
-		// if (newvalue === 0) {
-		// 	scrollView("signupform");
-		// }
-		// scrollView("name");
-		setValue(newvalue);
-	};
-
-	const formSubmit = (values) => {
-		// e.preventDefault();
-		console.log(values);
-		const { name, phone, email, age, password } = values;
-		props
-			.createPet({ name, phone, email, age, password })
-			.unwrap()
-			.then((data) => {
-				console.log(data);
-			})
-			.catch((err) => {
-				console.log(err);
-			});
-	};
-
 	const loginSubmit = (values) => {
 		console.log(values);
 
@@ -118,6 +85,8 @@ function PetLogin(props) {
 			.unwrap()
 			.then((data) => {
 				console.log(data);
+				setAlertContent({ status: data.status, message: data.message });
+				setOpen(true);
 			})
 			.catch((err) => {
 				console.log(err);
@@ -126,12 +95,37 @@ function PetLogin(props) {
 
 	return (
 		<div>
+			{alertContent ? (
+				<Collapse in={open}>
+					<Alert
+						action={
+							<IconButton
+								aria-label="close"
+								color="inherit"
+								size="small"
+								onClick={() => {
+									setOpen(false);
+									setAlertContent();
+								}}
+							>
+								<CloseIcon fontSize="inherit" />
+							</IconButton>
+						}
+						severity={alertContent.status === 200 ? "success" : "error"}
+						sx={{ mb: 2 }}
+					>
+						{alertContent.message}
+					</Alert>
+				</Collapse>
+			) : (
+				<></>
+			)}
 			<form onSubmit={handleSubmit((data) => loginSubmit(data))}>
 				<TextField
 					id="standard-basic"
 					label="Email"
 					variant="standard"
-					style={{ marginTop: "5%", width: "80%" }}
+					style={{ width: "80%" }}
 					{...register("email", {
 						required: "This is a mandatory field.",
 						pattern: {

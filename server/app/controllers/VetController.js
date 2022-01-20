@@ -4,26 +4,29 @@ const bcryptjs = require("bcryptjs");
 const vetControllers = {};
 
 vetControllers.register = async (req, res, next) => {
-	const { name, email, phone, HospitalName, password } = req.body;
+	var { name, email, phone, hospital, password } = req.body;
 	console.log("req: ", req.body);
 	try {
 		const vet = await Vet.findOne({
 			email,
 		});
 		if (vet) {
-			return res.status(401).json({
-				msg: "Email already registered!",
+			return res.send({
+				//409 is the status code for conflict
+				status: 409,
+				message: "Vet email already registered!",
 			});
 		} else {
 			const salt = await bcryptjs.genSalt(15);
 			const hashedpassword = await bcryptjs.hash(password, salt);
+			password = hashedpassword;
 
 			let createVet = await new Vet({
 				name,
 				phone,
 				email,
-				HospitalName,
-				hashedpassword,
+				hospital,
+				password,
 			});
 			let saveVet = await createVet
 				.save()
@@ -36,8 +39,13 @@ vetControllers.register = async (req, res, next) => {
 						},
 					};
 					console.log(payload);
-					jwt.sign(payload, "jwtSecret", (err, token) => {
-						res.json({ token: token });
+					jwt.sign(payload, process.env.jwtSecret, (err, token) => {
+						res.json({
+							success: true,
+							status: 200,
+							message: "Vet registered successfully.",
+							token: token,
+						});
 					});
 				})
 				.catch((err) => {
@@ -52,7 +60,54 @@ vetControllers.register = async (req, res, next) => {
 		// }
 	} catch (error) {
 		console.log(error);
-		return res.status(500).json({ msg: "Server error!" });
+		return res.send({ status: 500, msg: "Server error!" });
+	}
+};
+
+vetControllers.loginVet = async (req, res) => {
+	const { email, password } = req.body;
+
+	try {
+		const checkMail = await Vet.findOne({ email });
+		console.log(checkMail);
+		if (checkMail) {
+			console.log("response => ", checkMail);
+			const found = await bcryptjs.compare(password, checkMail.password);
+
+			if (found) {
+				const payload = {
+					user: checkMail._id,
+				};
+
+				jwt.sign(payload, process.env.jwtSecret, (err, token) => {
+					res.send({
+						success: true,
+						status: 200,
+						message: "Successfully logged in.",
+						token: token,
+					});
+				});
+			} else {
+				res.send({
+					success: false,
+					status: 409,
+					message: "Please check the password.",
+				});
+			}
+		} else {
+			res.send({
+				success: false,
+				status: 409,
+				message: "Email not registered.",
+			});
+		}
+	} catch (error) {
+		console.log(error);
+		res.send({
+			status: 500,
+			success: false,
+			message: error,
+		});
 	}
 };
 
