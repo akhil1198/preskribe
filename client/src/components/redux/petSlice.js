@@ -6,19 +6,22 @@ const initialState = [];
 export const createPet = createAsyncThunk(
 	"pet/create",
 	async ({ name, phone, email, age, password }) => {
+		// const dispatch = useDispatch();
 		const config = {
 			headers: {
 				"Content-Type": "application/json",
 			},
 		};
-
+		// dispatch(toggleLoading());
 		const body = { name, phone, email, age, password };
 		const url = "http://localhost:8000/api/pets/register";
 		try {
 			const res = await axios.post(url, body, config);
+			// dispatch(toggleLoading());
 			return res.data;
 		} catch (err) {
 			console.log(err);
+			// dispatch(toggleLoading());
 			return err;
 		}
 	}

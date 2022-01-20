@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { TextField, Alert, Collapse, IconButton } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import { Stack, Button } from "@mui/material";
@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form";
 import CloseIcon from "@mui/icons-material/Close";
 import { createVet } from "../../redux/vetSlice";
 import Wave from "../../../assets/Wave.png";
+import AlertComponent from "../../globalcomponents/Alerts";
+import Loader from "../../globalcomponents/Loader";
+import { selectLoading, toggleLoading } from "../../redux/loadingSlice";
 
 const useStyles = makeStyles((theme) => ({
 	back: {
@@ -61,6 +64,8 @@ function VetSignup(props) {
 	const classes = useStyles();
 	const [alertContent, setAlertContent] = useState();
 	const [open, setOpen] = useState(false);
+	const dispatch = useDispatch();
+	const isLoading = useSelector(selectLoading);
 
 	const {
 		register,
@@ -82,6 +87,8 @@ function VetSignup(props) {
 	const formSubmit = (values) => {
 		// e.preventDefault();
 		console.log(values);
+		dispatch(toggleLoading());
+
 		const { name, phone, email, hospital, password } = values;
 		props
 			.createVet({ name, phone, email, hospital, password })
@@ -90,37 +97,38 @@ function VetSignup(props) {
 				console.log(data);
 				setAlertContent({ status: data.status, message: data.message });
 				setOpen(true);
+				if (data.status === 200) {
+					dispatch(toggleLoading());
+					localStorage.setItem("token", data.token);
+					setTimeout(() => {
+						window.open("/vet-home", "_self");
+					}, 2000);
+				} else {
+					dispatch(toggleLoading());
+				}
 			})
 			.catch((err) => {
 				console.log(err.response);
-				console.log("yo");
 			});
 	};
+
+	if (isLoading) {
+		return (
+			<div>
+				<Loader />
+			</div>
+		);
+	}
 
 	return (
 		<div id="name">
 			{alertContent ? (
-				<Collapse in={open}>
-					<Alert
-						action={
-							<IconButton
-								aria-label="close"
-								color="inherit"
-								size="small"
-								onClick={() => {
-									setOpen(false);
-									setAlertContent();
-								}}
-							>
-								<CloseIcon fontSize="inherit" />
-							</IconButton>
-						}
-						severity={alertContent.status === 200 ? "success" : "error"}
-						sx={{ mb: 2 }}
-					>
-						{alertContent.message}
-					</Alert>
-				</Collapse>
+				<AlertComponent
+					setOpen={setOpen}
+					open={open}
+					alertContent={alertContent}
+					setAlertContent={setAlertContent}
+				/>
 			) : (
 				<></>
 			)}

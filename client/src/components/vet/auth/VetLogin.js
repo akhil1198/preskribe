@@ -4,10 +4,12 @@ import React, { useState } from "react";
 import Wave from "../../../assets/Wave.png";
 import { Stack, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { connect } from "react-redux";
+import { connect, useSelector, useDispatch } from "react-redux";
 import { loginVet } from "../../redux/vetSlice";
 import { useForm } from "react-hook-form";
-
+import AlertComponent from "../../globalcomponents/Alerts";
+import { selectLoading, toggleLoading } from "../../redux/loadingSlice";
+import Loader from "../../globalcomponents/Loader";
 const useStyles = makeStyles((theme) => ({
 	back: {
 		backgroundImage: `url(${Wave})`,
@@ -61,6 +63,8 @@ function VetLogin(props) {
 	const classes = useStyles();
 	const [alertContent, setAlertContent] = useState();
 	const [open, setOpen] = useState(false);
+	const dispatch = useDispatch();
+	const isLoading = useSelector(selectLoading);
 
 	const {
 		register,
@@ -78,6 +82,7 @@ function VetLogin(props) {
 
 	const loginSubmit = (values) => {
 		console.log(values);
+		dispatch(toggleLoading());
 
 		const { email, password } = values;
 		props
@@ -87,36 +92,39 @@ function VetLogin(props) {
 				console.log(data);
 				setAlertContent({ status: data.status, message: data.message });
 				setOpen(true);
+				if (data.status === 200) {
+					dispatch(toggleLoading());
+
+					localStorage.setItem("token", data.token);
+					setTimeout(() => {
+						window.open("/vet-home", "_self");
+					}, 2000);
+				} else {
+					dispatch(toggleLoading());
+				}
 			})
 			.catch((err) => {
 				console.log(err);
 			});
 	};
 
+	if (isLoading) {
+		return (
+			<div>
+				<Loader />
+			</div>
+		);
+	}
+
 	return (
 		<div>
 			{alertContent ? (
-				<Collapse in={open}>
-					<Alert
-						action={
-							<IconButton
-								aria-label="close"
-								color="inherit"
-								size="small"
-								onClick={() => {
-									setOpen(false);
-									setAlertContent();
-								}}
-							>
-								<CloseIcon fontSize="inherit" />
-							</IconButton>
-						}
-						severity={alertContent.status === 200 ? "success" : "error"}
-						sx={{ mb: 2 }}
-					>
-						{alertContent.message}
-					</Alert>
-				</Collapse>
+				<AlertComponent
+					setOpen={setOpen}
+					open={open}
+					alertContent={alertContent}
+					setAlertContent={setAlertContent}
+				/>
 			) : (
 				<></>
 			)}
