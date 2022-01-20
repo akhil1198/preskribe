@@ -16,7 +16,7 @@ petControllers.register = async (req, res, next) => {
 		if (pet) {
 			return res.send({
 				status: 409,
-				msg: "Email already registered!",
+				message: "Email already registered!",
 			});
 		} else {
 			const salt = await bcryptjs.genSalt(15);
