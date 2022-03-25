@@ -28,8 +28,8 @@ module.exports = (io, app) => {
 
     const findRoombyID = (allrooms, id) => {
         let findRoom = allrooms.findIndex((element, index, array) => {
-            console.log(element)
-            if(element.roomID === id) {
+            console.log(element.roomID !== id)
+            if(element.roomID !== id) {
                 return true 
             } else {
                 return false
