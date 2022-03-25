@@ -5,8 +5,6 @@ import Wave from "../../assets/Wave.png";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
 import ChatLogin from "./auth/ChatLogin";
 
 const useStyles = makeStyles((theme) => ({
@@ -62,6 +60,8 @@ const useStyles = makeStyles((theme) => ({
 function Chat(props) {
 	const classes = useStyles();
 	const [value, setValue] = useState(0);
+
+	
 
 	const handleSwitch = (event, newvalue) => {
 		setValue(newvalue);

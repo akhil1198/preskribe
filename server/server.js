@@ -6,10 +6,13 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const connection = require("./app/config/connection");
+const session = require("./app/sessions/index")
 
 connection();
 
 app.use(express.json({ extended: false }));
+
+app.use(session)	//calling session middleware
 
 app.use(
 	cors({
@@ -18,8 +21,26 @@ app.use(
 	})
 );
 
+//create an IO server instance
+let ioServer = app => {
+	app.locals.chatrooms = [];
+	const server = require('http').Server(app)
+	const io = require('socket.io')(server, {
+		cors: {
+			origin: "http://localhost:3000",
+			methods: ["GET", "POST"]
+		}
+	})
+	io.use((socket, next) => {
+		require('./app/sessions/index')(socket.request, {}, next)
+	})
+	require('./app/socket')(io, app)
+	return server;
+}
+
 app.use("/api/pets", require("./app/routes/PetRoutes"));
 app.use("/api/vets", require("./app/routes/VetRoutes"));
+app.use("/api/chat", require("./app/routes/ChatRoutes"));
 app.use("/api", (req, res) => {
 	res.send("NodeJS server up and running.");
 });
@@ -27,4 +48,4 @@ app.use("/api", (req, res) => {
 const port = process.env.PORT;
 console.log(process.env.PORT);
 
-http.listen(port, () => console.log(`NodeJS server up and running at ${port}`));
+ioServer(app).listen(port, () => console.log(`NodeJS server up and running at ${port}`));

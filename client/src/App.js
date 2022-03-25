@@ -7,6 +7,9 @@ import Vet from "./components/vet";
 import PetHome from "./components/petparent/home";
 import VetHome from "./components/vet/home";
 import ProtectedRoute from "./components/globalcomponents/ProtectedRoute";
+import Chat from "./components/chatmodule";
+import ChatRoom from "./components/chatmodule/room/ChatRoom";
+import Rooms from "./components/chatmodule/room/Rooms";
 
 var history = createBrowserHistory();
 // const theme = createTheme({
@@ -27,6 +30,11 @@ var history = createBrowserHistory();
 // 	},
 // });
 
+// //how to style progress bar : 
+// var progressbar = document.getElementById('progressbar');
+// var count = 0;
+// count += 100 / (data.length - 1);
+//                     progressbar.style.width = count + "%";
 function App() {
 	return (
 		<div className="App">
@@ -35,6 +43,11 @@ function App() {
 					<Route exact path="/" element={<Home />} />
 					<Route exact path="/parent" element={<Petparent />} />
 					<Route exact path="/vet" element={<Vet />} />
+					<Route exact path="/chat" element={<Chat />} />
+					<Route exact path="/chat-room" element={<ProtectedRoute />}>
+						<Route exact path="/chat-room" element={<ChatRoom />} />
+						<Route exact path="/chat-room/:id" element={<Rooms />} />
+					</Route>
 					<Route exact path="/parent-home" element={<ProtectedRoute />}>
 						<Route exact path="/parent-home" element={<PetHome />} />
 					</Route>
