@@ -68,7 +68,6 @@ input[name='roomName'] {
 
 .roomsListDiv {
 	position: relative;
-	width:460px;
 	height: 368px;
 	overflow-x: hidden;
 	overflow-y: scroll;

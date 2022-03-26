@@ -66,8 +66,9 @@ export default function ChatRoom() {
 	socket.emit('getChatrooms')
 	const classes = useStyles();
 	const [rooms, setrooms] = useState([])
+	const user = JSON.parse(localStorage.getItem('user'));
 	// const [roomName, setRoomName] = useState('')
-
+	console.log(user)
 	const {
 		register,
 		handleSubmit,
@@ -91,8 +92,8 @@ export default function ChatRoom() {
 	
 	useEffect(() => {
 		const chatrooms = (room) => {
-			console.log(JSON.parse(room))
-			setrooms(JSON.parse(room))
+			console.log(room)
+			setrooms(room)
 		}
 		socket.on('chatRoomsList', chatrooms)
 	}, [])
@@ -119,8 +120,16 @@ export default function ChatRoom() {
 			</div>
 			<div className="controls">
 				<div className="userPicHolder"><img src="./img/user.jpg" alt="John Doe"/></div>
-				<p className="userName">John Doe</p>
-				<button href="login.htm" id="logOutBtn">Logout</button>
+				<p className="userName">{user.name}</p>
+				<Button
+						variant="contained"
+						color="secondary"
+						size="small"
+						type="submit"
+						style={{ marginTop:'2%', left: '35%' }}
+					>
+							Logout
+					</Button>
 			</div>
 			<div className="controls">
 				<form onSubmit={handleSubmit((data) => createRoom(data))}>
@@ -136,7 +145,7 @@ export default function ChatRoom() {
 					id="standard-basic"
 					label="Room Name"
 					variant="standard"
-					style={{ width: "70%", marginTop:'2%', left: '-4%' }}
+					style={{ width: "70%", marginTop:'1%', left: '-4%' }}
 					{...register("roomname")}
 					// helperText={errors & errors.email?.message}
 				/>
@@ -145,7 +154,7 @@ export default function ChatRoom() {
 						color="secondary"
 						size="small"
 						type="submit"
-						style={{ marginTop:'5%' }}
+						style={{ marginTop:'2%' }}
 					>
 							Create
 					</Button>
@@ -155,7 +164,7 @@ export default function ChatRoom() {
 			</div>
 			<div className="roomsListDiv">
 				<ul className="roomsList" id="roomsListUL" key={nanoid(4)}>
-					{rooms.map(roo => {
+					{rooms.length < 1 ? <h3>No Rooms</h3> : rooms && rooms.map(roo => {
 						return <a onClick={(e) => window.location.href = "/chat-room/" + roo.roomID} key={roo.roomID}><li key={roo.roomID}>{roo.room}</li></a>
 					})}
 				</ul>

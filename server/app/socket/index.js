@@ -1,4 +1,5 @@
-const crypto = require('crypto')
+const crypto = require('crypto');
+const Chatroom = require('../models/ChatRoomModel');
 
 module.exports = (io, app) => {
     let allrooms = app.locals.chatrooms;
@@ -46,34 +47,76 @@ module.exports = (io, app) => {
         console.log('socket.io server connected to client!')
 
         socket.on('getChatrooms', () => {
-            socket.emit('chatRoomsList', JSON.stringify(allrooms))
+            Chatroom.find().then(docs => {
+                console.log("docs to send back => ", docs)
+                socket.emit('chatRoomsList', docs)
+            })
         })
 
-        socket.on('checkIfRoomExists', id => {
+        socket.on('checkIfRoomExists', async id => {
             console.log("ROOM ID => ", id)
-            if(!findRoombyID(allrooms, id)){
-                socket.emit('checkID', true)
+            let roomID = id
+            const checkExists = await Chatroom.findOne({ roomID });
+            console.log("room => ", checkExists)
+            if(checkExists){
+                console.log("exists good to go")
+                socket.emit('checkID', true, checkExists)
             } else {
+                console.log("doesnt not exist bad route")
                 socket.emit('checkID', false)
             }
         })
 
-        socket.on('createNewRoom', roomname => {
+        socket.on('createNewRoom', async roomname => {
             //check to see if the same room has been created. if else then create and send updated room list to frontend
 
-            console.log(roomname)
-            if(!findRoombyName(allrooms, roomname)) {
-                allrooms.push({
-                    room: roomname,
-                    roomID: randomHex(),
-                    users: []
-                })
+            console.log("name: ", roomname)
 
-                //emit updated list
-                socket.emit('chatRoomsList', JSON.stringify(allrooms))
-                //emit and updated list to everyone connected 
-                socket.broadcast.emit('chatRoomsList', JSON.stringify(allrooms))
+            let room = roomname
+            //Check if room exists
+            const checkRoom = await Chatroom.findOne({ room });
+            console.log("response => ", checkRoom);
+            if (!checkRoom) {
+                //if room doesnt exist push it
+                let roomID = randomHex()
+                let createRoom = await new Chatroom({
+                    room,
+                    roomID,
+                    // users,
+                });
+                let saveRoom = await createRoom
+                    .save()
+                    .then((response) => {
+                        console.log("RESPONSE => ", response)
+                        Chatroom.find().then(docs => {
+                            console.log("docs to send back => ", docs)
+                            socket.emit('chatRoomsList', docs)
+                            socket.broadcast.emit('chatRoomsList', docs)
+                        })
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+                    console.log("save: ", saveRoom)
+            } else {
+                console.log("exists => ", checkRoom)
+                //else send response saying room exists
+                socket.emit('chatRoomsList', "Room Name Already Exists.");
             }
+
+
+            // if(!findRoombyName(allrooms, roomname)) {
+            //     allrooms.push({
+            //         room: roomname,
+            //         roomID: randomHex(),
+            //         users: []
+            //     })
+
+            //     //emit updated list
+            //     socket.emit('chatRoomsList', JSON.stringify(allrooms))
+            //     //emit and updated list to everyone connected 
+            //     socket.broadcast.emit('chatRoomsList', JSON.stringify(allrooms))
+            // }
         })  
     })
 }

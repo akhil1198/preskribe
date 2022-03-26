@@ -1,6 +1,7 @@
 const Chat = require("../models/chatModel");
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
+const Pet = require("../models/PetModel");
 const chatController = {};
 
 chatController.getReq = async (req, res, next) => {
@@ -79,14 +80,13 @@ chatController.loginChat = async (req, res, next) => {
 	const { email, password } = req.body;
 
 	try {
-		const respon = await Chat.findOne({ email });
+		const respon = await Pet.findOne({ email });
 		// console.log(respon);
 		// console.log(respon);
 		if (respon) {
-			console.log("response => ", respon);
-
+			
 			const found = await bcryptjs.compare(password, respon.password);
-
+			
 			if (found) {
 				console.log(found);
 				const payload = {
@@ -96,12 +96,14 @@ chatController.loginChat = async (req, res, next) => {
 				};
 				console.log(payload);
 				console.log(process.env.jwtSecret);
-
+				
 				jwt.sign(payload, process.env.jwtSecret, (err, token) => {
+					console.log("response => ", respon);
 					res.send({
 						success: true,
 						status: 200,
 						message: "Successfully logged in.",
+						userData: respon,
 						token: token,
 					});
 				});

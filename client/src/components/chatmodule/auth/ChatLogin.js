@@ -5,7 +5,7 @@ import Wave from "../../../assets/Wave.png";
 import { Stack, Button } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { connect, useSelector, useDispatch } from "react-redux";
-import { loginVet } from "../../redux/vetSlice";
+import { loginChat } from "../../redux/chatSlice";
 import { useForm } from "react-hook-form";
 import AlertComponent from "../../globalcomponents/Alerts";
 import { selectLoading, toggleLoading } from "../../redux/loadingSlice";
@@ -86,7 +86,7 @@ function ChatLogin(props) {
 
 		const { email, password } = values;
 		props
-			.loginVet({ email, password })
+			.loginChat({ email, password })
 			.unwrap()
 			.then((data) => {
 				console.log(data);
@@ -94,8 +94,9 @@ function ChatLogin(props) {
 				setOpen(true);
 				if (data.status === 200) {
 					dispatch(toggleLoading());
-
+					console.log(data.userData)
 					localStorage.setItem("token", data.token);
+					localStorage.setItem("user", JSON.stringify(data.userData))
 					setTimeout(() => {
 						window.open("/chat-room", "_self");
 					}, 2000);
@@ -186,4 +187,4 @@ function ChatLogin(props) {
 	);
 }
 
-export default connect(null, { loginVet })(ChatLogin);
+export default connect(null, { loginChat })(ChatLogin);
