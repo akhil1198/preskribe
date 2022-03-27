@@ -17,6 +17,27 @@
 	background-color: rgb(0,0,0);
 }
 
+.roomsList {
+	margin:0px;
+	padding:0px;
+	list-style:none;
+	font-family: sans-serif;
+}
+
+.roomsList > a {
+	color: #FFF;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.roomsList > li {
+	padding: 18px;
+	background-color: rgb(245, 235, 202);
+	color: #000;
+	margin-bottom: 1px;
+}
+
+
 .titlePanel > h1 {
 	position: absolute;
 	color: rgb(255,255,255);

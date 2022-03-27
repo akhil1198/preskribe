@@ -3,12 +3,22 @@ import { useParams } from "react-router-dom";
 import {io} from 'socket.io-client'
 import './chatroomStyles.css'
 export default function Rooms(props) {
+	const [roomName, setRoomName] = useState()
+	const [roomData, setRoomData] = useState()
+	const [roomUsers, setRoomUser] = useState([])
+	const user = JSON.parse(localStorage.getItem('user'));
+
 	const { id } = useParams()
 	let socket = io('http://localhost:8000/roomslist');
+	let chatter = io('http://localhost:8000/chatter');
+
 	socket.on('connect', () => console.log('connected to server!'))
 	socket.emit('checkIfRoomExists', id)
-	const [roomName, setRoomName] = useState()
-	const user = JSON.parse(localStorage.getItem('user'));
+
+	let roomID = roomData && roomData.roomID
+
+	chatter.on('connect', () => console.log('connected to chatter!'))
+
 
 	useEffect(() => {
 		const chatrooms = (data, roomData) => {
@@ -17,17 +27,30 @@ export default function Rooms(props) {
 				window.open("/chat-room", "_self");
 			}
 			setRoomName(roomData && roomData.room)
+			setRoomData(roomData && roomData)
 		}
 		socket.on('checkID', chatrooms)
 	}, [])
 
-	// useEffect(() => {
-	// 	console.log("yo", props)
-	// }, [props])
-    // console.log(props)
+	useEffect(() => {
+		console.log("sup", roomData)
+		chatter.emit('join', {
+			roomID: roomData && roomData.roomID,
+			user,
+		})
 
-	
+	}, [roomData])
 
+	useEffect(() => {
+		const updateUsers = (data) => {
+			console.log(data.users)
+			setRoomUser(data.users)
+		}
+		
+		chatter.on('roomJoined', updateUsers)
+
+		console.log(roomUsers)
+	}, [])
 
 	return (
 		<div className="container">
@@ -54,9 +77,13 @@ export default function Rooms(props) {
 					</div>
 				</div>
 				<div className="chatUsers">
-					<div className="userBlock">
-						<div className="userPic"><img src="./img/user.jpg" alt="John Doe" /></div>
-						<div className="cuserName">John Doe</div>
+					<div >
+						<h3>People in this chat</h3>
+						<ul className="roomsList" id="roomsListUL">
+							{roomUsers.length < 1 ? <h3>No Users</h3> : roomUsers && roomUsers.map(user => {
+								return <li key={user.userID} style={{ textAlign: 'left' }}>{user.userName}</li>
+							})}
+						</ul>
 					</div>
 				</div>
 			</div>
