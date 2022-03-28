@@ -55,31 +55,6 @@ module.exports = (io, app) => {
         }
     }
 
-    let removeUserFromRoom = async (roomID, user, socket) => {
-        console.log(roomID, user)
-        let findRoom = await Chatroom.findOne({ roomID })
-        console.log(findRoom)
-
-        if(findRoom) {
-            const presentUsers = findRoom && findRoom.users
-
-            if(presentUsers.some(user => user.socketID == socket.id)){
-                console.log("found user delete him")
-                socket.leave(roomID)
-                const update = await Chatroom.updateOne(
-                    { 'users.socketID': socket.id},
-                    { $pull: { 'users.$.socketID': socket.id }},
-                    { upsert: true }
-                )
-            } else {
-                console.log("user not found")
-            }
-
-            //send updated users list to the same socket event used while adding
-            socket.broadcast.emit('roomJoined', await Chatroom.findOne({ roomID }))
-        }
-    }
-
     //for chats
     io.of('/chatter').on('connection', socket => {
         console.log('chatter connected to client!')
@@ -94,9 +69,11 @@ module.exports = (io, app) => {
         //disconnecting
         socket.on("disconnecting", async () => {
             console.log("Client disconnecting => ", socket.id);
+
             let findSocketID = await Chatroom.find({
                 users: { $elemMatch : { socketID: socket.id }}
             })
+
             const roomID = findSocketID && findSocketID[0] && findSocketID[0].roomID
             let users = findSocketID && findSocketID[0] && findSocketID[0].users
 

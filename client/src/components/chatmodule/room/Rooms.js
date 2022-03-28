@@ -43,16 +43,16 @@ export default function Rooms(props) {
 
 	useEffect(() => {
 		const updateUsers = (data) => {
-			console.log(data)
-			setRoomUser(data.users)
+			//checking the room id in the updated users data to only updated the users of the particular room
+			if(id == data.roomID) {
+				setRoomUser(data.users)
+			} else {
+
+			}
 		}
 		
-		chatter.on('roomJoined', updateUsers)
-
-		console.log(roomUsers)
+		chatter.on('roomJoined', updateUsers) 
 	}, [])
-
-	//problem : need to check roomID before updating the users list to make sure only the list in the particular room is being updated and not every room.
 
 	useEffect(() => {
 		socket.on('disconnect', () => {
