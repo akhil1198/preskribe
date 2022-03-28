@@ -43,7 +43,7 @@ export default function Rooms(props) {
 
 	useEffect(() => {
 		const updateUsers = (data) => {
-			console.log(data.users)
+			console.log(data)
 			setRoomUser(data.users)
 		}
 		
@@ -51,6 +51,14 @@ export default function Rooms(props) {
 
 		console.log(roomUsers)
 	}, [])
+
+	//problem : need to check roomID before updating the users list to make sure only the list in the particular room is being updated and not every room.
+
+	useEffect(() => {
+		socket.on('disconnect', () => {
+            console.log('Disconnected');
+        });
+	})
 
 	return (
 		<div className="container">
