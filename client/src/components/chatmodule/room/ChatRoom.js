@@ -63,12 +63,12 @@ export default function ChatRoom() {
 	let socket = io('http://localhost:8000/roomslist');
 	socket.on('connect', () => console.log('connected to server!'))
 	let chatRooms = null
-	socket.emit('getChatrooms')
+	
 	const classes = useStyles();
 	const [rooms, setrooms] = useState([])
 	const user = JSON.parse(localStorage.getItem('user'));
 	// const [roomName, setRoomName] = useState('')
-	console.log(user)
+	// console.log(user)
 	const {
 		register,
 		handleSubmit,
@@ -88,22 +88,22 @@ export default function ChatRoom() {
 	// 	}
 	// }
 
-
+	socket.emit('getChatrooms')
 	
 	useEffect(() => {
 		const chatrooms = (room) => {
-			console.log(room)
+			// console.log(room)
 			setrooms(room)
 		}
 		socket.on('chatRoomsList', chatrooms)
 	}, [])
-	console.log(rooms)
 
+	//creating room
 	const createRoom = (values) => {
 		// event.preventDefault()
 		let { roomname } = values
 		if(roomname != ''){
-			console.log(roomname)
+			//emitting to backend to create room with all the details
 			socket.emit('createNewRoom', roomname)
 			roomname = ''
 		} else {
@@ -120,8 +120,8 @@ export default function ChatRoom() {
 			</div>
 			<div className="controls">
 				<div className="userPicHolder"><img src="./img/user.jpg" alt="John Doe"/></div>
-				<p className="userName">{user.name}</p>
-				<Button
+					<p className="userName">{user.name}</p>
+					<Button
 						variant="contained"
 						color="secondary"
 						size="small"
@@ -142,13 +142,13 @@ export default function ChatRoom() {
 						// helperText={errors & errors.email?.message}
 					/> */}
 					<TextField
-					id="standard-basic"
-					label="Room Name"
-					variant="standard"
-					style={{ width: "70%", marginTop:'1%', left: '-4%' }}
-					{...register("roomname")}
-					// helperText={errors & errors.email?.message}
-				/>
+						id="standard-basic"
+						label="Room Name"
+						variant="standard"
+						style={{ width: "70%", marginTop:'1%', left: '-4%' }}
+						{...register("roomname")}
+						// helperText={errors & errors.email?.message}
+					/>
 					<Button
 						variant="contained"
 						color="secondary"

@@ -218,10 +218,9 @@ input[name='userInput'] {
 
 .chatMsg {
 	position: relative;
-	left: 38px;
 	font-family: sans-serif;
 	font-size: 15px;
-	width: 591px;
+	margin: 4%;
 }
 
 .chatMsg > img {

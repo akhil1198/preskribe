@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const Messages = require('../models/MessageModel');
 const Chatroom = require('../models/ChatRoomModel');
 
 module.exports = (io, app) => {
@@ -49,11 +50,12 @@ module.exports = (io, app) => {
 
             //join the room channel
             socket.join(roomID)
-
             //broadcasting the updated userslist
             socket.broadcast.emit('roomJoined', await Chatroom.findOne({ roomID }))
         }
     }
+
+    
 
     //for chats
     io.of('/chatter').on('connection', socket => {
@@ -64,6 +66,43 @@ module.exports = (io, app) => {
             const { roomID } = data
             //adding users to room
             const addFn = addUserToRoom(roomID, data.user, socket)
+        })
+
+        socket.on('getNewMessages', () => {
+            const fetchMessages = Messages.find().then(docs => {
+                // console.log("docs to send back => ", docs)
+                // console.log("docs => ", docs)
+                socket.emit('allNewMessages', docs)
+            })
+        })
+
+        //recieving messages from frontend to store in db
+        socket.on('newMessage', async data => {
+            console.log(data)
+            const { roomID } = data
+            const name = data.user.name
+            const messages = data.message
+
+            const getRoom = await Messages.findOne({ roomID });
+            if(getRoom){
+                const add = await Messages.updateOne(
+                    { _id: getRoom._id },
+                    { $push: { messages: data } }
+                )
+                console.log(add)
+                socket.broadcast.emit('allNewMessages', await Messages.findOne({ roomID }))
+            }
+            
+            // console.log(newmessage)
+            // newmessage.save().then(async () => {
+            //     console.log("check this =??????????", data.roomID)
+            //     socket.to(data.roomID).emit('allNewMessages', await Messages.find())
+            // })
+            // .catch((err) => {
+            //     console.log("new message err => ",err)
+            // })
+            //adding users to room
+            // const addFn = addUserToRoom(roomID, data.user, socket)
         })
 
         //disconnecting
@@ -115,12 +154,10 @@ module.exports = (io, app) => {
         socket.on('createNewRoom', async roomname => {
             //check to see if the same room has been created. if else then create and send updated room list to frontend
 
-            // console.log("name: ", roomname)
-
             let room = roomname
+
             //Check if room exists
             const checkRoom = await Chatroom.findOne({ room });
-            // console.log("response => ", checkRoom);
             if (!checkRoom) {
                 //if room doesnt exist push it
                 let roomID = randomHex()
@@ -131,8 +168,23 @@ module.exports = (io, app) => {
                 });
                 let saveRoom = await createRoom
                     .save()
-                    .then((response) => {
+                    .then(async (response) => {
                         // console.log("RESPONSE => ", response)
+                        let createMessageRoom = await new Messages({
+                            roomName: roomname,
+                            roomID,
+                            // users,
+                        });
+                        let saveMessageRoom = await createMessageRoom
+                            .save()
+                            .then((response) => {
+                                console.log("RESPONSE msgroom => ", response)
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            });    
+
+
                         Chatroom.find().then(docs => {
                             console.log("docs to send back => ", docs)
                             socket.emit('chatRoomsList', docs)
@@ -143,13 +195,13 @@ module.exports = (io, app) => {
                     .catch((err) => {
                         console.log(err);
                     });
-                    // console.log("save: ", saveRoom)
+                    
+                
             } else {
                 console.log("exists => ", checkRoom)
                 //else send response saying room exists
                 socket.emit('chatRoomsList', "Room Name Already Exists.");
             }
-
 
             // if(!findRoombyName(allrooms, roomname)) {
             //     allrooms.push({

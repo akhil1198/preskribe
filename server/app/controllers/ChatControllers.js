@@ -1,4 +1,4 @@
-const Chat = require("../models/chatModel");
+const Chat = require("../models/MessageModel");
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const Pet = require("../models/PetModel");
@@ -80,6 +80,8 @@ chatController.loginChat = async (req, res, next) => {
 	const { email, password } = req.body;
 
 	try {
+
+		//checking with pet records here cause it is currently built with the idea that only pet parents will be able to message.
 		const respon = await Pet.findOne({ email });
 		// console.log(respon);
 		// console.log(respon);
