@@ -4,7 +4,7 @@ const bcryptjs = require("bcryptjs");
 const vetControllers = {};
 
 vetControllers.register = async (req, res, next) => {
-	var { name, email, phone, hospital, password } = req.body;
+	var { name, email, phone, designation, hospital, password } = req.body;
 	console.log("req: ", req.body);
 	try {
 		const vet = await Vet.findOne({
@@ -25,6 +25,7 @@ vetControllers.register = async (req, res, next) => {
 				name,
 				phone,
 				email,
+				designation,
 				hospital,
 				password,
 			});
@@ -101,6 +102,26 @@ vetControllers.loginVet = async (req, res) => {
 				message: "Email not registered.",
 			});
 		}
+	} catch (error) {
+		console.log(error);
+		res.send({
+			status: 500,
+			success: false,
+			message: error,
+		});
+	}
+};
+
+vetControllers.getAll = async (req, res) => {
+	console.log('uyo')
+	try {
+		const getVets = await Vet.find().select("-password");
+		console.log(getVets);
+		res.send({
+			success: true,
+			status: 200,
+			data: getVets,
+		});
 	} catch (error) {
 		console.log(error);
 		res.send({

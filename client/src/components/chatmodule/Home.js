@@ -5,7 +5,10 @@ import Wave from "../../assets/Wave.png";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
-import ChatLogin from "./auth/ChatLogin";
+import { Stack, Button } from "@mui/material";
+import { connect, useSelector, useDispatch } from "react-redux";
+// import Loader from "../../globalcomponents/Loader";
+// import { selectLoading, toggleLoading } from "../../redux/loadingSlice";
 
 const useStyles = makeStyles((theme) => ({
 	back: {
@@ -33,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 			fontSize: ["1.5rem", "!important"],
 		},
 	},
-	 text2: {
+    text2: {
 		// fontSize: ["4rem", "!important"],
 		// fontFamily: "Roboto",
 		padding: "5% 0 3% 0",
@@ -66,7 +69,7 @@ const useStyles = makeStyles((theme) => ({
 	},
 }));
 
-function Chat(props) {
+function ChatHome(props) {
 	const classes = useStyles();
 	const [value, setValue] = useState(0);
 
@@ -90,12 +93,31 @@ function Chat(props) {
 				<Box className="w3-animate-bottom">
 					<Paper elevation={12} className={classes.paper}>
 						<Typography variant="h2" className={classes.text}>
-							Preskribe Chat
+							Welcome to Preskribe Chat!
 						</Typography>
 						<Typography variant="h2" className={classes.text2}>
-							Get in touch with a vet for urgent consultations!
-						</Typography>
-						<ChatLogin />
+                            Choose an option
+                        </Typography>
+
+                        <Stack direction="row" spacing={2} justifyContent="center" mb={2}>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                size="small"
+                                onClick={() => (window.location.href = "/chat-room")}
+                                
+                            >
+                                Group Chats & Discussions
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="secondary"
+                                size="small"
+                                onClick={() => (window.location.href = "/chat-vet")}
+                            >
+                                Talk to a vet!
+                            </Button>
+                        </Stack>
 					</Paper>
 				</Box>
 			</Grid>
@@ -104,4 +126,4 @@ function Chat(props) {
 	);
 }
 
-export default Chat;
+export default ChatHome;

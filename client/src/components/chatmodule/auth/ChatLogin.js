@@ -98,7 +98,7 @@ function ChatLogin(props) {
 					localStorage.setItem("token", data.token);
 					localStorage.setItem("user", JSON.stringify(data.userData))
 					setTimeout(() => {
-						window.open("/chat-room", "_self");
+						window.open("/chat-home", "_self");
 					}, 2000);
 				} else {
 					dispatch(toggleLoading());
@@ -149,6 +149,7 @@ function ChatLogin(props) {
 				</p>
 				<TextField
 					id="standard-basic"
+					type="password"
 					label="Password"
 					variant="standard"
 					style={{

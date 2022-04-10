@@ -11,6 +11,9 @@ const VetSchema = new Schema({
 	phone: {
 		type: Number,
 	},
+	designation: {
+		type: String,
+	},
 	hospital: {
 		type: String,
 	},

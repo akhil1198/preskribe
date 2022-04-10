@@ -24,12 +24,8 @@ export default function Rooms(props) {
 	let socket = io('http://localhost:8000/roomslist');
 	let chatter = io('http://localhost:8000/chatter');
 
-	socket.on('connect', () => console.log('connected to server!'))
-	socket.emit('checkIfRoomExists', id)
-
+	
 	let roomID = roomData && roomData.roomID
-
-	chatter.on('connect', () => console.log('connected to chatter!'))
 
 	const {
 		register,
@@ -43,7 +39,13 @@ export default function Rooms(props) {
 		},
 	});
 
-	chatter.emit('getNewMessages')
+	useEffect(() => {
+		socket.on('connect', () => console.log('connected to group-server!'))
+		chatter.on('connect', () => console.log('connected to group-chatter!'))
+	}, [])
+		socket.emit('checkIfRoomExists', id)
+		chatter.emit('getNewMessages')
+
 
 	useEffect(() => {
 		const chatrooms = (data, roomData) => {
@@ -62,7 +64,6 @@ export default function Rooms(props) {
             componentMounted.current = false; // (4) set it to false when we leave the page
         }
 	}, [])
-	console.log(chatter.roo)
 
 
 
@@ -74,17 +75,23 @@ export default function Rooms(props) {
 
 	}, [roomData])
 
+	//problems :
+	//client disconnects randomly
+	//insufficient resources from sockets after chatting for a while
+	
 
 	useEffect(() => {
+		//this is buggy.
 		const updateUsers = (data) => {
-			// //console.log("updatedUsers => ", data)
-			if (componentMounted.current){ // (5) is component still mounted?
-				if(id == data.roomID) {
-					setRoomUser(data.users)
-				} else {
-
+			console.log("updatedUsers => ", data)
+			if(data){
+				if (componentMounted.current){ // (5) is component still mounted?
+					if(id == data.roomID) {
+						setRoomUser(data.users)
+					}
 				}
 			}
+			
 			//checking the room id in the updated users data to only updated the users of the particular room
 			
 		}
@@ -94,29 +101,25 @@ export default function Rooms(props) {
 		 return () => { // This code runs when component is unmounted
             componentMounted.current = false; // (4) set it to false when we leave the page
         }
-	}, [])
+	}, [0])
 
+
+	const AlwaysScrollToBottom = () => {
+		const elementRef = useRef();
+		useEffect(() => elementRef.current.scrollIntoView());
+		return <div ref={elementRef} />;
+	};
 	
-	useEffect(() => {
-		socket.on('disconnect', () => {
-            //console.log('Disconnected');
-        });
-	})
-
 	//sending messages
 	const sendMessage = (values) => {
-		
-		if(values.message.length > 0) {
+		// console.log(values.message.length)
+		if(values.message) {
 			chatter.emit('newMessage', {
 				roomID,
 				user,
 				message: values.message
 			})
 			reset()
-		} else {
-			
-			alert("type a msg")
-
 		}
 
 		getNewMessages()
@@ -126,7 +129,7 @@ export default function Rooms(props) {
 	const getNewMessages = () => {
 		chatter.emit('getNewMessages')
 		chatter.on('allNewMessages', (data) => {
-			console.log("all messages => ", data)
+			// console.log("all messages => ", data)
 			if (componentMounted.current){ // (5) is component still mounted?
 				if(data.roomID == id){
 					setMessages(data.messages)
@@ -138,20 +141,34 @@ export default function Rooms(props) {
 
 	//loading all messages
 	useEffect( async () => {
-        const updateMessages = (data) => {
-			console.log("all messages => ", data)
+        const fetchMessages = (data) => {
 
-			function isRoom(rooms) {
-				return rooms.roomID === id;
-			}
-			const foundRoom = data.find(isRoom)
+			// so when trying to update messages first : i need to check if it belongs to that room, second : i need to set it to state. 
+			// console.log(data)
 
-			if(foundRoom){
-				setMessages(foundRoom.messages)
+			//data here contains the room details with the messages array
+			//so i need to first get the room that the user is currently at.
+			//and then i need to access the messages array
+			//and then i need to set that array to state
+
+			//error here => data.find is not a function. data is an array of objects
+			//solution => updating and fetching messages at the same place which is leading to this error. write a new function to update messages cause when there is an update only one object is returned with updated array of messages
+			//make this a function to fetch messages and not update.
+			const roomMessages = data && data.find(room => {
+				// console.log(room)
+				return room.roomID == id
+			})
+
+			//roomMessages now has the correct room and now we can access the messages array.
+			// console.log("===============>", roomMessages)
+
+			if(roomMessages && roomMessages.messages){
+				// console.log(roomMessages.messages)
+				setMessages(roomMessages.messages)
 			}
 		}
 
-		chatter.on('allNewMessages', updateMessages)
+		chatter.on('allNewMessages', fetchMessages)
         // When request is finished:
        
         return () => { // This code runs when component is unmounted
@@ -159,25 +176,38 @@ export default function Rooms(props) {
         }
     }, []);
 
+
+	//useEffect to update messages
+	useEffect(() => {
+		const updateMessages = (data) => {
+			//
+			// console.log(data)
+			if(data && data.messages) {
+				setMessages(data.messages)
+			}
+			
+		}
+		chatter.on('updateNewMessages', updateMessages)
+
+	}, [])
+
 	return (
 		<div className="container">
-			<div className="titlePanel">
-				<h1>{roomName}</h1>
-			</div>
 			<div className="controls">
 				<div className="userPicHolder"><img src="./img/user.jpg" alt="John Doe" /></div>
-				<p className="userName">{user.name}</p>
+				<p className="userName">{roomName}</p>
 				<a href="/chat-room" id="roomsBtn">Rooms</a>
 				<a href="/chat-room" id="logOutBtn">Logout</a>
 			</div>
 			<div className="chatListDiv">
 				<div className="chatMessagesPanel">
-					<div className="chatMessages">
+					<div className="chatMessages" >
 							{
 								messages && messages.length < 1 ? <h3>No Messages</h3> : messages && messages.map(msg => {
-									return user._id == msg.user._id ? <div className="chatBlock" key={nanoid(4)}><div className="chatMsg" key={nanoid(4)} style={{ textAlign: 'right'}}>{msg.message}</div></div> : <div className="chatBlock" key={nanoid(4)}><div className="chatMsg" key={nanoid(4)} style={{ textAlign: 'left' }}>{msg.message}</div></div>
+									return user._id == msg.user._id ? <div style={{ textAlign: '-webkit-right' }} key={nanoid(4)}><div className="chatBlock" key={nanoid(4)} ><div className="chatMsg" key={nanoid(4)} style={{ textAlign: 'right' }}>{msg.message}</div></div></div> : <div style={{ textAlign: '-webkit-left' }} key={nanoid(4)}><div className="chatBlock" key={nanoid(4)} ><div className="chatMsg" key={nanoid(4)} style={{ textAlign: 'left' }}>{msg.message}</div></div></div>
 								})
 							}
+							<AlwaysScrollToBottom />
 					</div>
 					<div className="typePanel">
 						<form onSubmit={handleSubmit((data) => sendMessage(data))}>
@@ -212,8 +242,8 @@ export default function Rooms(props) {
 					<div >
 						<h3>People in this chat</h3>
 						<ul className="roomsList" id="roomsListUL">
-							{roomUsers.length < 1 ? <h3>No Users</h3> : roomUsers && roomUsers.map(user => {
-								return <li key={user.userID} style={{ textAlign: 'left' }}>{user.userName}</li>
+							{roomUsers.length < 1 ? <h3>No Users</h3> : roomUsers && roomUsers.map(users => {
+								return <li key={users.userID} style={{ textAlign: 'left' }}>{users.userName == user.name ? `${users.userName} (you)` : users.userName}</li>
 							})}
 						</ul>
 					</div>

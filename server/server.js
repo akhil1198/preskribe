@@ -26,6 +26,7 @@ let ioServer = app => {
 	app.locals.chatrooms = [];
 	const server = require('http').Server(app)
 	const io = require('socket.io')(server, {
+		pingTimeout: 60000,
 		cors: {
 			origin: "http://localhost:3000",
 			methods: ["GET", "POST"]

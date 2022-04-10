@@ -5,14 +5,14 @@ const initialState = [];
 
 export const createVet = createAsyncThunk(
 	"vet/Create",
-	async ({ name, email, phone, hospital, password }) => {
+	async ({ name, email, phone, designation, hospital, password }) => {
 		const config = {
 			headers: {
 				"Content-Type": "application/json",
 			},
 		};
 
-		const body = { name, email, phone, hospital, password };
+		const body = { name, email, phone, designation, hospital, password };
 		const url = "http://localhost:8000/api/vets/register";
 
 		try {
@@ -25,7 +25,7 @@ export const createVet = createAsyncThunk(
 );
 
 export const loginVet = createAsyncThunk(
-	"pet/login",
+	"vet/login",
 	async ({ email, password }) => {
 		const config = {
 			headers: {
@@ -44,6 +44,19 @@ export const loginVet = createAsyncThunk(
 	}
 );
 
+export const getVet = createAsyncThunk(
+	"vet/all",
+	async () => {
+		const url = "http://localhost:8000/api/vets/getAll"
+		try {
+			const resp = await axios.get(url)
+			return resp.data
+		} catch (error) {
+			console.log(error);
+		};
+	}
+)
+
 export const vetSlice = createSlice({
 	name: "vetapis",
 	initialState,
@@ -52,6 +65,9 @@ export const vetSlice = createSlice({
 			state.push(action.payload);
 		},
 		[loginVet.fulfilled]: (state, action) => {
+			state.push(action.payload);
+		},
+		[getVet.fulfilled]: (state, action) => {
 			state.push(action.payload);
 		},
 	},

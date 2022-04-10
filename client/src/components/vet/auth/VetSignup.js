@@ -77,6 +77,7 @@ function VetSignup(props) {
 			name: "",
 			phone: null,
 			email: "",
+			designation: "",
 			hospital: "",
 			password: "",
 		},
@@ -89,9 +90,9 @@ function VetSignup(props) {
 		console.log(values);
 		dispatch(toggleLoading());
 
-		const { name, phone, email, hospital, password } = values;
+		const { name, phone, email, hospital, designation, password } = values;
 		props
-			.createVet({ name, phone, email, hospital, password })
+			.createVet({ name, phone, email, designation, hospital, password })
 			.unwrap()
 			.then((data) => {
 				console.log(data);
@@ -195,6 +196,17 @@ function VetSignup(props) {
 					{...register("hospital")}
 				/>
 				<p className={classes.errorMessage}>{errors && errors.age?.message}</p>
+				<TextField
+					id="standard-basic"
+					label="Designation"
+					variant="standard"
+					style={{
+						marginTop: "5%",
+						width: "80%",
+					}}
+					{...register("designation")}
+				/>
+				<p className={classes.errorMessage}>{errors && errors.designation?.message}</p>
 				<TextField
 					id="standard-basic"
 					label="Password"

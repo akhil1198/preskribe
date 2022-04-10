@@ -2,19 +2,7 @@ const crypto = require('crypto');
 const Messages = require('../models/MessageModel');
 const Chatroom = require('../models/ChatRoomModel');
 
-module.exports = (io, app) => {
-    let allrooms = app.locals.chatrooms;
-
-    // allrooms.push({
-    //     room: 'Good Food',
-    //     roomID: '0001',
-    //     users: []
-    // })
-    // allrooms.push({
-    //     room: 'Good Foods',
-    //     roomID: '0002',
-    //     users: []
-    // })
+module.exports = (io, app) => { 
     
     const randomHex = () => {
         return crypto.randomBytes(24).toString('hex')
@@ -55,11 +43,13 @@ module.exports = (io, app) => {
         }
     }
 
-    
+    io.on('connection', (socket) => {
+        console.log("connected to client bro")
+    })
 
     //for chats
     io.of('/chatter').on('connection', socket => {
-        console.log('chatter connected to client!')
+        console.log('chatter-group server connected to client!')
 
         //joining chat rooms
         socket.on('join', async data => {
@@ -90,7 +80,7 @@ module.exports = (io, app) => {
                     { $push: { messages: data } }
                 )
                 console.log(add)
-                socket.broadcast.emit('allNewMessages', await Messages.findOne({ roomID }))
+                socket.broadcast.emit('updateNewMessages', await Messages.findOne({ roomID }))
             }
             
             // console.log(newmessage)
@@ -132,7 +122,7 @@ module.exports = (io, app) => {
 
     //for rooms
     io.of('/roomslist').on('connection', socket => {
-        console.log('socket.io server connected to client!')
+        console.log('socket.io-group server connected to client!')
 
         socket.on('getChatrooms', () => {
             Chatroom.find().then(docs => {

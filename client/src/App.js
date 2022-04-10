@@ -10,6 +10,9 @@ import ProtectedRoute from "./components/globalcomponents/ProtectedRoute";
 import Chat from "./components/chatmodule";
 import ChatRoom from "./components/chatmodule/room/ChatRoom";
 import Rooms from "./components/chatmodule/room/Rooms";
+import ChatHome from "./components/chatmodule/Home";
+import VetChat from "./components/chatmodule/dm";
+import DmRooms from "./components/chatmodule/dm/DmRoom";
 
 var history = createBrowserHistory();
 // const theme = createTheme({
@@ -44,6 +47,14 @@ function App() {
 					<Route exact path="/parent" element={<Petparent />} />
 					<Route exact path="/vet" element={<Vet />} />
 					<Route exact path="/chat" element={<Chat />} />
+					<Route exact path="/chat-home" element={<ProtectedRoute />}>
+						<Route exact path="/chat-home" element={<ChatHome />} />
+					</Route>
+					<Route exact path="/chat-vet" element={<ProtectedRoute />}>
+						<Route exact path="/chat-vet" element={<VetChat />} />
+						<Route exact path="/chat-vet/:id" element={<DmRooms />} />
+
+					</Route>
 					<Route exact path="/chat-room" element={<ProtectedRoute />}>
 						<Route exact path="/chat-room" element={<ChatRoom />} />
 						<Route exact path="/chat-room/:id" element={<Rooms />} />

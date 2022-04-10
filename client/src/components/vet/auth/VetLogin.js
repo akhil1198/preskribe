@@ -149,6 +149,7 @@ function VetLogin(props) {
 				<TextField
 					id="standard-basic"
 					label="Password"
+					type="password"
 					variant="standard"
 					style={{
 						marginTop: "5%",
