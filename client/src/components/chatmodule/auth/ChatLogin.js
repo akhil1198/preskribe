@@ -142,7 +142,7 @@ function ChatLogin(props) {
 							message: "Please enter a valid email.",
 						},
 					})}
-					// helperText={errors & errors.email?.message}
+				// helperText={errors & errors.email?.message}
 				/>
 				<p className={classes.errorMessage}>
 					{errors && errors.email?.message}
