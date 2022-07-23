@@ -4,16 +4,16 @@ const bcryptjs = require("bcryptjs");
 const Pet = require("../models/PetModel");
 const chatController = {};
 
-chatController.getReq = async (req, res, next) => {
+chatController.getReq = async (req, res) => {
     res.send("testing sessions -> " + req.session.favColor)
 }
 
-chatController.setReq = async (req, res, next) => {
+chatController.setReq = async (req, res) => {
     req.session.favColor = "red"
     res.send("setting session")
 }
 
-chatController.register = async (req, res, next) => {
+chatController.register = async (req, res) => {
 	var { name, email, phone, age, password } = req.body;
 	console.log(req.body);
 	console.log("req: ", req.body);
@@ -76,7 +76,7 @@ chatController.register = async (req, res, next) => {
 	}
 };
 
-chatController.loginChat = async (req, res, next) => {
+chatController.loginChat = async (req, res) => {
 	const { email, password } = req.body;
 
 	try {

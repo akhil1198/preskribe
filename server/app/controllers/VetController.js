@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const vetControllers = {};
 
-vetControllers.register = async (req, res, next) => {
+vetControllers.register = async (req, res) => {
 	var { name, email, phone, designation, hospital, password } = req.body;
 	console.log("req: ", req.body);
 	try {
@@ -113,7 +113,6 @@ vetControllers.loginVet = async (req, res) => {
 };
 
 vetControllers.getAll = async (req, res) => {
-	console.log('uyo')
 	try {
 		const getVets = await Vet.find().select("-password");
 		console.log(getVets);

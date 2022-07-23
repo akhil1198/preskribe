@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import {io} from 'socket.io-client'
+import { io } from 'socket.io-client'
 import './chatroomStyles.css'
 import { useForm } from "react-hook-form";
 import AlertComponent from "../../globalcomponents/Alerts";
@@ -16,27 +16,27 @@ export default function DmRooms(props) {
 	const [roomData, setRoomData] = useState()
 	const [roomUsers, setRoomUser] = useState([])
 	const [messages, setMessages] = useState([])
-    const [socketConnected, setSocketConnected] = useState(false)
+	const [socketConnected, setSocketConnected] = useState(false)
 	const [key, setKey] = useState(true)
 	const user = JSON.parse(localStorage.getItem('user'));
 	const componentMounted = useRef(true); // (3) component is mounted
 
 	let roomID = roomData && roomData.roomID
-    
+
 	const {
-        register,
+		register,
 		handleSubmit,
 		reset,
 		formState: { errors },
 	} = useForm({
-        // mode: onchange(),
+		// mode: onchange(),
 		defaultValues: {
-            message: "",
+			message: "",
 		},
 	});
- 
-		// socket.emit('checkIfRoomExists', id)
-		// chatter.emit('getNewMessages')
+
+	// socket.emit('checkIfRoomExists', id)
+	// chatter.emit('getNewMessages')
 
 
 	// useEffect(() => {
@@ -49,12 +49,12 @@ export default function DmRooms(props) {
 	// 			setRoomName(roomData && roomData.room)
 	// 			setRoomData(roomData && roomData)
 	// 		}
-			
+
 	// 	}
 	// 	socket.on('checkID', chatrooms)
 	// 	return () => { // This code runs when component is unmounted
-    //         componentMounted.current = false; // (4) set it to false when we leave the page
-    //     }
+	//         componentMounted.current = false; // (4) set it to false when we leave the page
+	//     }
 	// }, [])
 
 
@@ -70,7 +70,7 @@ export default function DmRooms(props) {
 	//problems :
 	//client disconnects randomly
 	//insufficient resources from sockets after chatting for a while
-	
+
 
 	// useEffect(() => {
 	// 	//this is buggy.
@@ -83,16 +83,16 @@ export default function DmRooms(props) {
 	// 				}
 	// 			}
 	// 		}
-			
+
 	// 		//checking the room id in the updated users data to only updated the users of the particular room
-			
+
 	// 	}
-		
+
 	// 	chatter.on('roomJoined', updateUsers) 
 
 	// 	 return () => { // This code runs when component is unmounted
-    //         componentMounted.current = false; // (4) set it to false when we leave the page
-    //     }
+	//         componentMounted.current = false; // (4) set it to false when we leave the page
+	//     }
 	// }, [0])
 
 
@@ -102,67 +102,54 @@ export default function DmRooms(props) {
 		return <div ref={elementRef} />;
 	};
 
-    return (
-        <div className="container">
-            <div className="controls">
-                <div className="userPicHolder"><img src="./img/user.jpg" alt="John Doe" /></div>
-                <p className="userName">recievers name</p>
-                <a href="/chat-room" id="roomsBtn">Back</a>
-                <a href="/chat-room" id="logOutBtn">Logout</a>
-            </div>
-            <div className="chatListDiv">
-                <div className="chatMessagesPanel">
-                    <div className="chatMessages" >
-                            {
-                                messages && messages.length < 1 ? <h3>No new messages</h3> : messages && messages.map(msg => {
-                                    return user._id == msg.user._id ? <div style={{ textAlign: '-webkit-right' }} key={nanoid(4)}><div className="chatBlock" key={nanoid(4)} ><div className="chatMsg" key={nanoid(4)} style={{ textAlign: 'right' }}>{msg.message}</div></div></div> : <div style={{ textAlign: '-webkit-left' }} key={nanoid(4)}><div className="chatBlock" key={nanoid(4)} ><div className="chatMsg" key={nanoid(4)} style={{ textAlign: 'left' }}>{msg.message}</div></div></div>
-                                })
-                            }
-                            <AlwaysScrollToBottom />
-                    </div>
-                    <div className="typePanel">
-                        <form onSubmit={handleSubmit((data) => console.log(data))}>
-                            <TextField
-                                id="standard-basic"
-                                variant="standard"
-                                placeholder="Type your message"
-                                style={{ width: "70%", marginTop: "3%", right: '5%' }}
-                                // , marginTop:'1%', left: '-4%'
-                                {...register("message")}
-                                onKeyUp={(event) => {
-                                    if (event.key== 'Enter'){
-                                        console.log(event.target.value)
-                                    }
-                                }}
-                                // helperText={errors & errors.email?.message}
-                            />
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                size="small"
-                                type="submit"
-                                style={{ marginTop:'3%' }}
-                            >
-                                Send
-                            </Button>
-                        </form>
-                        {/* <a href="#" id="uploadFile" className="fileUploadBtn">Photo</a> */}
-                    </div>
-                </div>
-                {/* <div className="chatUsers">
-                    <div >
-                        <h3>People in this chat</h3>
-                        <ul className="roomsList" id="roomsListUL">
-                            {roomUsers.length < 1 ? <h3>No Users</h3> : roomUsers && roomUsers.map(user => {
-                                return <li key={user.userID} style={{ textAlign: 'left' }}>{user.userName}</li>
-                            })}
-                        </ul>
-                    </div>
-                </div> */}
-            </div>
-        </div>
-    );
-	
+	return (
+		<div>
+			<div>
+				<div style={{ textAlign: "left", borderBottom: "1px solid" }}>
+					<h3 style={{ margin: "2%", fontFamily: "sans-serif" }}>Recievers name</h3>
+				</div>
+				<div>
+					<div style={{ minHeight: "52vh", borderBottom: "1px solid", }}>
+						{
+							messages && messages.length < 1 ? <h4>No new messages</h4> : messages && messages.map(msg => {
+								return user._id == msg.user._id ? <div style={{ textAlign: '-webkit-right' }} key={nanoid(4)}><div className="chatBlock" key={nanoid(4)} ><div className="chatMsg" key={nanoid(4)} style={{ textAlign: 'right' }}>{msg.message}</div></div></div> : <div style={{ textAlign: '-webkit-left' }} key={nanoid(4)}><div className="chatBlock" key={nanoid(4)} ><div className="chatMsg" key={nanoid(4)} style={{ textAlign: 'left' }}>{msg.message}</div></div></div>
+							})
+						}
+						<AlwaysScrollToBottom />
+					</div>
+					<div >
+						<form onSubmit={handleSubmit((data) => console.log(data))}>
+							<TextField
+								id="standard-basic"
+								variant="standard"
+								placeholder="Type your message"
+								style={{ width: "70%", marginTop: "3%", right: '5%' }}
+								// , marginTop:'1%', left: '-4%'
+								{...register("message")}
+								onKeyUp={(event) => {
+									if (event.key == 'Enter') {
+										console.log(event.target.value)
+									}
+								}}
+							// helperText={errors & errors.email?.message}
+							/>
+							<Button
+								variant="contained"
+								color="secondary"
+								size="small"
+								type="submit"
+								style={{ marginTop: '3%' }}
+							>
+								Send
+							</Button>
+						</form>
+						{/* <a href="#" id="uploadFile" className="fileUploadBtn">Photo</a> */}
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+
 	//sending messages
 	// const sendMessage = (values) => {
 	// 	// console.log(values.message.length)
@@ -194,7 +181,7 @@ export default function DmRooms(props) {
 
 	//loading all messages
 	// useEffect( async () => {
-    //     const fetchMessages = (data) => {
+	//     const fetchMessages = (data) => {
 
 	// 		// so when trying to update messages first : i need to check if it belongs to that room, second : i need to set it to state. 
 	// 		// console.log(data)
@@ -222,12 +209,12 @@ export default function DmRooms(props) {
 	// 	}
 
 	// 	chatter.on('allNewMessages', fetchMessages)
-    //     // When request is finished:
-       
-    //     return () => { // This code runs when component is unmounted
-    //         componentMounted.current = false; // (4) set it to false when we leave the page
-    //     }
-    // }, []);
+	//     // When request is finished:
+
+	//     return () => { // This code runs when component is unmounted
+	//         componentMounted.current = false; // (4) set it to false when we leave the page
+	//     }
+	// }, []);
 
 
 	// //useEffect to update messages
@@ -238,7 +225,7 @@ export default function DmRooms(props) {
 	// 		if(data && data.messages) {
 	// 			setMessages(data.messages)
 	// 		}
-			
+
 	// 	}
 	// 	chatter.on('updateNewMessages', updateMessages)
 

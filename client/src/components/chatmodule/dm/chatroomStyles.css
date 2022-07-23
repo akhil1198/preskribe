@@ -162,6 +162,16 @@
 	overflow-y: scroll;
 }
 
+.dmUsers {
+	position: absolute;
+	height:566px;
+	background: #F7F4F4;
+	width: 267px;
+	right: 693px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
 .chatMessages {
 	position: relative;
 	/* background-color: red; */

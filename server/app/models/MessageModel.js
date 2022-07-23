@@ -10,7 +10,7 @@ const messageSchema = new Schema({
 	},
 	messages: {
 		type: Array,
-        "default": []
+		"default": []
 	}
 });
 

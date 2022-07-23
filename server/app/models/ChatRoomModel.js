@@ -10,7 +10,7 @@ const chatRoomSchema = new Schema({
 	},
 	users: {
 		type: Array,
-        "default": []
+		"default": []
 	},
 });
 

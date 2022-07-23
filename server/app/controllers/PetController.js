@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const petControllers = {};
 
-petControllers.register = async (req, res, next) => {
+petControllers.register = async (req, res) => {
 	var { name, email, phone, age, password } = req.body;
 	console.log(req.body);
 	console.log("req: ", req.body);
@@ -66,7 +66,7 @@ petControllers.register = async (req, res, next) => {
 	}
 };
 
-petControllers.loginPet = async (req, res, next) => {
+petControllers.loginPet = async (req, res) => {
 	const { email, password } = req.body;
 
 	try {
